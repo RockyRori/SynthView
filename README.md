@@ -1,2 +1,2 @@
-# SynthFace
-LU CDS525 Project SynthFace Team
+# SynthView
+LU CDS525 Project SynthView Team
