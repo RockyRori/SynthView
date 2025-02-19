@@ -93,7 +93,7 @@ def main():
         args.device_ids = None
 
     # Create a directory for saving the results, and set up the logging
-    # configuration. The log file will be saved in the results directory.
+    # configuration. The log file will be saved in the result directory.
     misc.mkdir(args.save_path)
     misc.setup_logging(path.join(args.save_path, 'log.txt'))
 
