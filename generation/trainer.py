@@ -11,6 +11,7 @@ from data import get_loader
 from utils.recorderx import RecoderX
 from utils.misc import save_image_grid, mkdir
 
+
 class Trainer():
     def __init__(self, args):
         # parameters
@@ -19,7 +20,7 @@ class Trainer():
         self.invalidity_margins = None
         self.init_generator = True
         self.parallel = False
-        
+
         if self.args.use_tb:
             self.tb = RecoderX(log_dir=args.save_path)
 
@@ -29,9 +30,11 @@ class Trainer():
         min_features = min(self.args.min_features * pow(2, math.floor(self.scale / 4)), 128)
 
         # initialize model
-        if not self.scale or (math.floor(self.scale / 4) != math.floor((self.scale - 1)/ 4)):
+        if not self.scale or (math.floor(self.scale / 4) != math.floor((self.scale - 1) / 4)):
             # We only need to initialize the discriminator model at scales 0, 4, 8, ...
-            model_config = {'max_features': max_features, 'min_features': min_features, 'num_blocks': self.args.num_blocks, 'kernel_size': self.args.kernel_size, 'padding': self.args.padding}
+            model_config = {'max_features': max_features, 'min_features': min_features,
+                            'num_blocks': self.args.num_blocks, 'kernel_size': self.args.kernel_size,
+                            'padding': self.args.padding}
             d_model = models.__dict__[self.args.dis_model]
             self.d_model = d_model(**model_config)
             self.d_model = self.d_model.to(self.args.device)
@@ -81,14 +84,16 @@ class Trainer():
         if self.print_model:
             logging.info(self.g_model)
             logging.info(self.d_model)
-            logging.info('Number of parameters in generator: {}'.format(sum([l.nelement() for l in self.g_model.parameters()])))
-            logging.info('Number of parameters in discriminator: {}'.format(sum([l.nelement() for l in self.d_model.parameters()])))
+            logging.info(
+                'Number of parameters in generator: {}'.format(sum([l.nelement() for l in self.g_model.parameters()])))
+            logging.info('Number of parameters in discriminator: {}'.format(
+                sum([l.nelement() for l in self.d_model.parameters()])))
             self.print_model = False
 
         # training mode
         self.g_model.train()
         self.d_model.train()
-    
+
     def _init_eval(self, loader):
         # Parameters:
         #   loader: the data loader
@@ -104,7 +109,8 @@ class Trainer():
         min_features = min(self.args.min_features * pow(2, math.floor(self.scale / 4)), 128)
 
         # 2. Create the configuration for the generator model
-        model_config = {'max_features': max_features, 'min_features': min_features, 'num_blocks': self.args.num_blocks, 'kernel_size': self.args.kernel_size, 'padding': self.args.padding}
+        model_config = {'max_features': max_features, 'min_features': min_features, 'num_blocks': self.args.num_blocks,
+                        'kernel_size': self.args.kernel_size, 'padding': self.args.padding}
 
         # 3. Initialize the first scale of the generator model
         g_model = models.__dict__[self.args.gen_model]
@@ -127,7 +133,8 @@ class Trainer():
 
         # 7. Print the model architecture and the number of parameters
         logging.info(self.g_model)
-        logging.info('Number of parameters in generator: {}'.format(sum([l.nelement() for l in self.g_model.parameters()])))
+        logging.info(
+            'Number of parameters in generator: {}'.format(sum([l.nelement() for l in self.g_model.parameters()])))
 
         # 8. Set the key for the amplitude of the noise
         self.key = 's{}'.format(self.args.stop_scale + 1)
@@ -170,7 +177,7 @@ class Trainer():
         # set noises
         loader.dataset.noises = self._set_noises(loader.dataset.reals)
 
-    def _init_local(self, loader):    
+    def _init_local(self, loader):
         # initialize models
         self._init_models(loader)
 
@@ -182,15 +189,21 @@ class Trainer():
         self.key = 's{}'.format(self.scale)
 
     def _adjust_scales(self, image):
-        self.args.num_scales = math.ceil((math.log(math.pow(self.args.min_size / (min(image.size(2), image.size(3))), 1), self.args.scale_factor_init))) + 1
-        self.args.scale_to_stop = math.ceil(math.log(min([self.args.max_size, max([image.size(2), image.size(3)])]) / max([image.size(2), image.size(3)]), self.args.scale_factor_init))
+        self.args.num_scales = math.ceil((math.log(
+            math.pow(self.args.min_size / (min(image.size(2), image.size(3))), 1), self.args.scale_factor_init))) + 1
+        self.args.scale_to_stop = math.ceil(math.log(
+            min([self.args.max_size, max([image.size(2), image.size(3)])]) / max([image.size(2), image.size(3)]),
+            self.args.scale_factor_init))
         self.args.stop_scale = self.args.num_scales - self.args.scale_to_stop
 
         self.args.scale_one = min(self.args.max_size / max([image.size(2), image.size(3)]), 1)
         image_resized = imresize(image, self.args.scale_one)
 
-        self.args.scale_factor = math.pow(self.args.min_size/(min(image_resized.size(2), image_resized.size(3))), 1 / (self.args.stop_scale))
-        self.args.scale_to_stop = math.ceil(math.log(min([self.args.max_size, max([image_resized.size(2), image_resized.size(3)])]) / max([image_resized.size(2), image_resized.size(3)]), self.args.scale_factor_init))
+        self.args.scale_factor = math.pow(self.args.min_size / (min(image_resized.size(2), image_resized.size(3))),
+                                          1 / (self.args.stop_scale))
+        self.args.scale_to_stop = math.ceil(math.log(
+            min([self.args.max_size, max([image_resized.size(2), image_resized.size(3)])]) / max(
+                [image_resized.size(2), image_resized.size(3)]), self.args.scale_factor_init))
         self.args.stop_scale = self.args.num_scales - self.args.scale_to_stop
 
     def _set_reals(self, real):
@@ -209,7 +222,7 @@ class Trainer():
         # loop over scales
         for key in reals.keys():
             noises.update({key: self._generate_noise(reals[key].unsqueeze(dim=0), repeat=(key == 's0')).squeeze(dim=0)})
-        
+
         return noises
 
     def _generate_noise(self, tensor_like, repeat=False):
@@ -223,8 +236,10 @@ class Trainer():
 
     def _save_models(self):
         # save models
-        torch.save(self.g_model.state_dict(), os.path.join(self.args.save_path, self.key, '{}_s{}.pt'.format(self.args.gen_model, self.step)))
-        torch.save(self.d_model.state_dict(), os.path.join(self.args.save_path, self.key, '{}_s{}.pt'.format(self.args.dis_model, self.step)))
+        torch.save(self.g_model.state_dict(),
+                   os.path.join(self.args.save_path, self.key, '{}_s{}.pt'.format(self.args.gen_model, self.step)))
+        torch.save(self.d_model.state_dict(),
+                   os.path.join(self.args.save_path, self.key, '{}_s{}.pt'.format(self.args.dis_model, self.step)))
 
     def _save_last(self, amps):
         # save models
@@ -303,7 +318,7 @@ class Trainer():
         self.g_optimizer.zero_grad()
 
         # get generated data
-        generated_data_rec = self.g_model(reals, amps, noises) # reals, amps, noises
+        generated_data_rec = self.g_model(reals, amps, noises)  # reals, amps, noises
         loss = 0.
 
         # reconstruction loss
@@ -311,7 +326,7 @@ class Trainer():
             loss_recon = self.reconstruction(generated_data_rec, reals[self.key])
             loss += loss_recon * self.args.reconstruction_weight
             self.losses['G_recon'].append(loss_recon.data.item())
-        
+
         # adversarial loss
         if self.args.adversarial_weight:
             d_generated = self.d_model(generated_data_adv)
@@ -332,7 +347,7 @@ class Trainer():
         noises = data['noises']
         reals = data['reals']
         amps = data['amps']
-        
+
         # critic iteration
         fakes = self._critic_wgan_iteration(reals, amps)
 
@@ -343,9 +358,12 @@ class Trainer():
         # logging
         if self.step % self.args.print_every == 0:
             line2print = 'Iteration {}'.format(self.step)
-            line2print += ', D: {:.6f}, D_r: {:.6f}, D_f: {:.6f}'.format(self.losses['D'][-1], self.losses['D_r'][-1], self.losses['D_f'][-1])
+            line2print += ', D: {:.6f}, D_r: {:.6f}, D_f: {:.6f}'.format(self.losses['D'][-1], self.losses['D_r'][-1],
+                                                                         self.losses['D_f'][-1])
             line2print += ', D_gp: {:.6f}'.format(self.losses['D_gp'][-1])
-            line2print += ', G: {:.5f}, G_recon: {:.5f}, G_adv: {:.5f}'.format(self.losses['G'][-1], self.losses['G_recon'][-1], self.losses['G_adv'][-1])
+            line2print += ', G: {:.5f}, G_recon: {:.5f}, G_adv: {:.5f}'.format(self.losses['G'][-1],
+                                                                               self.losses['G_recon'][-1],
+                                                                               self.losses['G_adv'][-1])
             logging.info(line2print)
 
         # plots for tensorboard
@@ -379,9 +397,9 @@ class Trainer():
 
         # set reals
         for key in data_reals.keys():
-           reals.update({key: data_reals[key].clone().unsqueeze(dim=0).repeat(self.args.batch_size, 1, 1, 1)}) 
+            reals.update({key: data_reals[key].clone().unsqueeze(dim=0).repeat(self.args.batch_size, 1, 1, 1)})
 
-        # evaluation
+            # evaluation
         with torch.no_grad():
             generated_sampled = self.g_model(reals, amps)
 
@@ -423,12 +441,13 @@ class Trainer():
 
         logging.info('\nScales:')
         for key in reals.keys():
-            logging.info('{}, size: {}x{}, amp: {:.3f}'.format(key, reals[key].size(-2), reals[key].size(-1), amps[key]))
+            logging.info(
+                '{}, size: {}x{}, amp: {:.3f}'.format(key, reals[key].size(-2), reals[key].size(-1), amps[key]))
 
     def train(self):
         # get loader
         loader = get_loader(self.args)
-        
+
         # initialize global
         self._init_global(loader)
 

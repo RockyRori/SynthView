@@ -1,5 +1,6 @@
-from .datasets import  Dataset
+from .datasets import Dataset
 from torch.utils.data import DataLoader
+
 
 def get_loader(args):
     # Initialize the dataset with provided arguments

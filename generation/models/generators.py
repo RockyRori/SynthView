@@ -7,6 +7,7 @@ from torch.nn import functional as F
 
 __all__ = ['g_multivanilla']
 
+
 def initialize_model(model, scale=1.):
     for m in model.modules():
         if isinstance(m, nn.Conv2d):
@@ -32,6 +33,7 @@ def initialize_model(model, scale=1.):
             # layer, we don't need to do anything.
             continue
 
+
 class BasicBlock(nn.Module):
     def __init__(self, in_channels=64, out_channels=64, kernel_size=3, padding=1, bias=True):
         super(BasicBlock, self).__init__()
@@ -55,6 +57,7 @@ class BasicBlock(nn.Module):
         x = self.lrelu(self.batch_norm(self.conv(x)))
         return x
 
+
 class Vanilla(nn.Module):
     def __init__(self, in_channels, max_features, min_features, num_blocks, kernel_size, padding):
         super(Vanilla, self).__init__()
@@ -71,15 +74,17 @@ class Vanilla(nn.Module):
         # and applies a convolutional layer with the same number of output
         # channels as the maximum number of features specified in the
         # constructor.
-        blocks.append(BasicBlock(in_channels=in_channels, out_channels=max_features, kernel_size=kernel_size, padding=padding))
+        blocks.append(
+            BasicBlock(in_channels=in_channels, out_channels=max_features, kernel_size=kernel_size, padding=padding))
         # The remaining BasicBlock layers take the output of the previous
         # layer and apply a convolutional layer with the number of output
         # channels being the maximum of the minimum number of features
         # specified in the constructor and the number of features of the
         # previous layer divided by 2.
         for i in range(0, num_blocks - 2):
-            f = max_features // pow(2, (i+1))
-            blocks.append(BasicBlock(in_channels=max(min_features, f * 2), out_channels=max(min_features, f), kernel_size=kernel_size, padding=padding))
+            f = max_features // pow(2, (i + 1))
+            blocks.append(BasicBlock(in_channels=max(min_features, f * 2), out_channels=max(min_features, f),
+                                     kernel_size=kernel_size, padding=padding))
         # The features module is a sequence of the BasicBlock layers.
         self.features = nn.Sequential(*blocks)
 
@@ -88,7 +93,8 @@ class Vanilla(nn.Module):
         self.features_to_image = nn.Sequential(
             # Apply a convolutional layer with the same number of output
             # channels as the input to the features module.
-            nn.Conv2d(in_channels=max(f, min_features), out_channels=in_channels, kernel_size=kernel_size, padding=padding),
+            nn.Conv2d(in_channels=max(f, min_features), out_channels=in_channels, kernel_size=kernel_size,
+                      padding=padding),
             # Apply a hyperbolic tangent activation function to ensure the
             # output is between -1 and 1.
             nn.Tanh())
@@ -101,8 +107,9 @@ class Vanilla(nn.Module):
         z = F.pad(z, [self.padding, self.padding, self.padding, self.padding])
         z = self.features(z)
         z = self.features_to_image(z)
-        
+
         return x + z
+
 
 class MultiVanilla(nn.Module):
     def __init__(self, in_channels, max_features, min_features, num_blocks, kernel_size, padding):
@@ -143,13 +150,14 @@ class MultiVanilla(nn.Module):
         # If the scale has changed, update the current generator
         # to the new maximum and minimum number of features.
         if math.floor(self.scale / 4) != math.floor((self.scale - 1) / 4):
-            self.curr = Vanilla(self.in_channels, max_features, min_features, self.num_blocks, self.kernel_size, self.padding).to(device)
+            self.curr = Vanilla(self.in_channels, max_features, min_features, self.num_blocks, self.kernel_size,
+                                self.padding).to(device)
 
     def _compute_previous(self, reals, amps, noises=None):
         # parameters
         keys = list(reals.keys())
         y = torch.zeros_like(reals[keys[0]])
-        
+
         # loop over scales
         for key, single_scale in self.prev.named_children():
             # get the next key
@@ -170,7 +178,7 @@ class MultiVanilla(nn.Module):
             y = imresize(y, 1. / self.scale_factor)
             # crop the output to the size of the next scale
             y = y[:, :, 0:reals[next_key].size(2), 0:reals[next_key].size(3)]
-            
+
         return y
 
     def forward(self, reals, amps, noises=None):
@@ -183,7 +191,7 @@ class MultiVanilla(nn.Module):
             # recursively applying the previous generators in the
             # sequence of generators
             y = self._compute_previous(reals, amps, noises).detach()
-            
+
         # If we are given a fixed noise, use it
         # Otherwise, generate a random noise
         if noises:
@@ -197,7 +205,7 @@ class MultiVanilla(nn.Module):
 
         # Compute the output of the current generator
         # This is the "current layer" in the paper
-        o = self.curr(z.detach(), y.detach()) 
+        o = self.curr(z.detach(), y.detach())
         # Return the output of the current generator
         return o
 
@@ -232,6 +240,7 @@ class MultiVanilla(nn.Module):
     def eval(self):
         self.train(False)
 
+
 def g_multivanilla(**config):
     config.setdefault('in_channels', 3)
     config.setdefault('min_features', 32)
@@ -239,5 +248,5 @@ def g_multivanilla(**config):
     config.setdefault('num_blocks', 5)
     config.setdefault('kernel_size', 3)
     config.setdefault('padding', 0)
-    
+
     return MultiVanilla(**config)

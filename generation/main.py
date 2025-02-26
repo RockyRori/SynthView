@@ -15,23 +15,26 @@ from os import path
 from utils import misc
 from random import randint
 
+
 def get_arguments():
     parser = argparse.ArgumentParser(description='SinGAN: Learning a Generative Model from a Single Natural Image')
     parser.add_argument('--device', default='cuda', help='device assignment ("cpu" or "cuda")')
     parser.add_argument('--device-ids', default=[0], type=int, nargs='+', help='device ids assignment (e.g 0 1 2 3)')
 
-    parser.add_argument('--gen-model', default='g_multivanilla', help='generator architecture (default: g_multivanilla)')
+    parser.add_argument('--gen-model', default='g_multivanilla',
+                        help='generator architecture (default: g_multivanilla)')
     parser.add_argument('--dis-model', default='d_vanilla', help='discriminator architecture (default: d_vanilla)')
     parser.add_argument('--min-features', default=32, type=int, help='minimum features (default: 32)')
     parser.add_argument('--max-features', default=32, type=int, help='maximum features (default: 32)')
     parser.add_argument('--num-blocks', default=5, type=int, help=' (default: 5)')
     parser.add_argument('--kernel-size', default=3, type=int, help=' (default: 3)')
     parser.add_argument('--padding', default=0, type=int, help=' (default: 0)')
-    
+
     parser.add_argument('--root', default='', help='image source')
     parser.add_argument('--min-size', default=20, type=int, help='minimum scale size (default: 25)')
     parser.add_argument('--max-size', default=200, type=int, help='maximum scale size  (default: 250)')
-    parser.add_argument('--scale-factor-init', default=0.75, type=float, help='initilize scaling factor (default: 0.75)')
+    parser.add_argument('--scale-factor-init', default=0.75, type=float,
+                        help='initilize scaling factor (default: 0.75)')
     parser.add_argument('--noise-weight', default=0.1, type=float, help='noise amplitude (default: 0.1)')
 
     parser.add_argument('--batch-size', default=1, type=int, help='batch-size (default: 1)')
@@ -66,6 +69,7 @@ def get_arguments():
         args.seed = randint(0, 12345)
     return args
 
+
 def main():
     """
     This is the main entry point of the program. It parses arguments, sets up
@@ -76,7 +80,7 @@ def main():
 
     # set the random seed. This is important for reproducibility of the results
     torch.manual_seed(args.seed)
-    
+
     # If we are using a CUDA device, set the device to the first device in the
     # list of devices specified in the arguments. Also, set the random seed for
     # CUDA. This is important because the random number generator is not
@@ -110,6 +114,7 @@ def main():
         trainer.eval()
     else:
         trainer.train()
+
 
 if __name__ == '__main__':
     # enables a ctrl-c without triggering errors

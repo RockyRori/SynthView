@@ -4,6 +4,7 @@ from math import floor
 from torchvision import transforms
 from PIL import Image
 
+
 class Dataset(torch.utils.data.dataset.Dataset):
     def __init__(self, root='', batch_size=1, crop_size=0):
         """
@@ -77,9 +78,9 @@ class Dataset(torch.utils.data.dataset.Dataset):
 
         # Calculate the crop region using the given scale
         # Crop the image based on the position and crop size, adjusted by the scale
-        image = image[:, 
-                      round(x * scale):(round(x * scale) + round(self.crop_size * scale)), 
-                      round(y * scale):(round(y * scale) + round(self.crop_size * scale))]
+        image = image[:,
+                round(x * scale):(round(x * scale) + round(self.crop_size * scale)),
+                round(y * scale):(round(y * scale) + round(self.crop_size * scale))]
 
         # Check if the flip parameter is set
         # If true, horizontally flip the image
@@ -128,11 +129,11 @@ class Dataset(torch.utils.data.dataset.Dataset):
         # full size
         else:
             # No cropping needed, just copy the original data
-            reals = self.reals #TODO: clone when crop
-            noises = self.noises #TODO: clone when crop
+            reals = self.reals  # TODO: clone when crop
+            noises = self.noises  # TODO: clone when crop
 
         # Return the batch
         return {'reals': reals, 'noises': noises, 'amps': amps}
-       
+
     def __len__(self):
         return self.batch_size

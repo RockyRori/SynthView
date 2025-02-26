@@ -1,6 +1,7 @@
 import torch
 from utils.core import imresize
 
+
 class ConsistencyLoss(torch.nn.Module):
     def __init__(self, scale=0.5, criterion=torch.nn.MSELoss()):
         """
