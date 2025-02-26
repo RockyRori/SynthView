@@ -2,7 +2,20 @@
 
 LU CDS525 Project SynthView Team
 
-Do the following steps
+# CDS525 Practical App of Deep Learning
+
+Director: Prof. DONG
+
+Project: generate similar images from single image using GAN.
+
+| Student No. | English Name  | Email Address (Lingnan Email) |
+|-------------|---------------|-------------------------------|
+| 3160708     | LUO Suhai     | suhailuo@ln.hk                |
+| 3160320     | LI Junrong    | junrongli@ln.hk               |
+| 3160148     | YAO HaoYang   | hyao@ln.hk                    |
+| 3160617     | HUANG Xinghua | xinghuahuang@ln.hk            |
+| 1165950     | MA Xiaorui    | xiaoruima@ln.hk               |
+| 1179248     | CHAI Yaping   | yapingchai@ln.hk              |
 
 # Clone repository
 
@@ -111,3 +124,34 @@ run the previous command you will see
 
 at the same hierarchy you will find a results folder containing everything.
 ![sampled.png](figures/sampled.png)
+
+# Reference
+
+https://arxiv.org/pdf/1905.01164
+
+# Division of labor
+
+1.结果展示：录制视频和写PPT
+2.文档写作：写proposal和final report
+3.模型训练与优化：训练模型和编写包含清晰英文注释的代码
+4.数据收集与预处理：提供可用的数据集，每节课提醒Quiz时间。
+5.原理解读：写技术文档和数学公式，参考群里的链接
+6.模型比较：比较组内几个模型的效果，用数学指标评价我们的模型
+
+| English Name  | Division |
+|---------------|----------|
+| LUO Suhai     | 写代码，模型比较 |
+| LI Junrong    | 待定       |
+| YAO HaoYang   | 待定       |
+| HUANG Xinghua | 待定       |
+| MA Xiaorui    | 原理解读     |
+| CHAI Yaping   | 模型训练     |
+结果展示：录制视频和写PPT；文档写作：写proposal和final report；数据收集与预处理：提供可用的数据集，每节课提醒Quiz时间。
+每个人首先下载代码然后成功运行。每个人从这里面选择一个主题作为演讲的时候自己的主题。按照表格的分工完成任务，最好是月底完成。
+(1)Model principle
+(2)Loss Function
+(3)Optimizer
+(4)Other Hyperparameters (e.g., batch size, learning rate, number of epochs)
+(5)Fine-tuning and pre-training (for large language/Transformer model)
+(6)Model evaluation
+(7)Model Comparison
