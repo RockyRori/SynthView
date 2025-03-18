@@ -90,7 +90,7 @@ upload your target to images for example balloons.png
 
 ## Resize
 
-not every image can be handled unless the image size is less than 256*256(recommended)
+not every image can be handled, unless the image size is between 128*128 and 256*256(recommended)
 
 ```commandline
 python .\generation\main.py --root .\images\balloons.png
