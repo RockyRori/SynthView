@@ -88,6 +88,10 @@ choose appropriate pytorch version and download
 
 upload your target to images for example balloons.png
 
+## Resize
+
+not every image can be handled unless the image size is less than 256*256(recommended)
+
 ```commandline
 python .\generation\main.py --root .\images\balloons.png
 ```
@@ -146,6 +150,7 @@ https://arxiv.org/pdf/1905.01164
 | HUANG Xinghua | 待定       |
 | MA Xiaorui    | 原理解读     |
 | CHAI Yaping   | 模型训练     |
+
 结果展示：录制视频和写PPT；文档写作：写proposal和final report；数据收集与预处理：提供可用的数据集，每节课提醒Quiz时间。
 每个人首先下载代码然后成功运行。每个人从这里面选择一个主题作为演讲的时候自己的主题。按照表格的分工完成任务，最好是月底完成。
 (1)Model principle
