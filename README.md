@@ -106,7 +106,6 @@ run the previous command you will see
 # Evaluating
 
 test your result
-!!!not yet finished
 
 ```commandline
 python .\generation\main.py --root .\images\balloons.png --evaluation --model-to-load .\results\2025-02-26_11-17-13\g_multivanilla.pt --amps-to-load .\results\2025-02-26_11-17-13\amps.pt --num-steps 100 --batch-size 16
